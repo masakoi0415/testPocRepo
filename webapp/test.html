@@ -1,0 +1,38 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+
+<title>認証画面</title>
+<script src="https://d.line-scdn.net/liff/1.0/sdk.js" type="text/javascript"></script>
+<script type="text/javascript">
+    
+    
+    window.onload = function () {
+        
+        liff.init(function(p){
+            liff.getProfile()
+            .then(profile => {
+                document.getElementById('userId').innerText = JSON.stringify(profile)
+            })
+            .catch((err) => {
+                document.getElementById('displayName').innerText = "ERR1"
+            });
+        },function(p){
+            document.getElementById('pictureUrl').innerHTML = "ERR2"
+            
+        })
+        
+    };
+    
+</script>
+</head>
+<body>
+
+<button id="profile">プロフィールを取得する</button>
+<p id="userId"></p>
+<p id="displayName"></p>
+<p id="pictureUrl"></p>
+<p id="statusMessage"></p>
+    
+</body>
+</html>

@@ -1,0 +1,196 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Cache-Control" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<script>
+    window.onload = function() {
+        initFormData();
+    }
+    
+    function initFormData() {
+        formPage = 1;
+        formData = {
+            page1 : {
+                data1 : "",
+                data2 : "",
+                data3 : "",
+            },
+            page2 : {
+                data1 : "",
+                data2 : "",
+                data3 : "",
+            },
+            page3 : {
+                data1 : "",
+                data2 : "",
+                data3 : "",
+            }
+        };
+        document.getElementById("btnPrev").disabled = true;
+        setTitleStr(formPage);
+        setFormStr(formPage);
+        setFormVal(formPage);
+    }
+    
+    function setFormData(page, data, val) {
+        var pageVal = "page" + page;
+        formData[pageVal][data] = val;
+    }
+    
+    function getFormData(page, data, val) {
+        var pageVal = "page" + page;
+        return formData[pageVal][data];
+    }
+    
+    function setTitleStr(page) {
+        document.getElementById("title1").textContent = "パラメータ入力 " + page + "/3";
+    }
+    
+    function setFormStr(page) {
+        var dataNum = 1;
+        document.getElementById("label" + dataNum).textContent = "ページ" + page + "::" + dataNum;
+        dataNum++;
+        document.getElementById("label" + dataNum).textContent = "ページ" + page + "::" + dataNum;
+        dataNum++;
+        document.getElementById("label" + dataNum).textContent = "ページ" + page + "::" + dataNum;
+    }
+    
+    function setFormVal(page) {
+        var dataNum = 1;
+        document.getElementById("input" + dataNum).value = getFormData(page, "data" + dataNum);
+        dataNum++;
+        document.getElementById("input" + dataNum).value = getFormData(page, "data" + dataNum);
+        dataNum++;
+        document.getElementById("input" + dataNum).value = getFormData(page, "data" + dataNum);
+    }
+    
+    function setFormData(page) {
+        var dataNum = 1;
+        formData["page" + page]["data" + dataNum] = document.getElementById("input" + dataNum).value;
+        dataNum++;
+        formData["page" + page]["data" + dataNum] = document.getElementById("input" + dataNum).value;
+        dataNum++;
+        formData["page" + page]["data" + dataNum] = document.getElementById("input" + dataNum).value;
+    }
+    
+    function processPrev(page) {
+        setFormData(page);
+        
+        formPage--;
+        document.getElementById("btnNext").disabled = false;
+        if ( formPage == 1 ) {
+            document.getElementById("btnPrev").disabled = true;
+        }
+        
+        setFormStr(formPage);
+        setFormVal(formPage);
+    }
+    
+    function processNext(page) {
+        setFormData(page);
+        
+        formPage++;
+        document.getElementById("btnPrev").disabled = false;
+        if( formPage == 3) {
+            document.getElementById("btnNext").disabled = true;
+        }
+        setFormStr(formPage);
+        setFormVal(formPage);
+    }
+    
+    function processSubmit(page) {
+        setFormData(page);
+        
+        setCommResult("","","");
+        
+        var xmlHttpReq = new XMLHttpRequest();
+        var jsonData = JSON.stringify(formData);
+        var url = "https://api.us-south.apiconnect.appdomain.cloud/appcorepocgmailcom-dev/sales/POCPermissionChkControllerVer/postTestPost";
+        xmlHttpReq.open("POST", url, true);
+        
+        xmlHttpReq.onreadystatechange = function(e) {
+            if ( xmlHttpReq.readyState == 4 ) {
+                if ( xmlHttpReq.status == 200) {
+                    console.log("SUCCESS");
+                    setCommResult("SUCCESS", JSON.stringify(formData), xmlHttpReq.responseText);    
+                } else {
+                    console.log("FAILED");
+                    setCommResult("FAILED", JSON.stringify(formData), xmlHttpReq.responseText);
+                }
+            }
+        }
+        xmlHttpReq.setRequestHeader("Content-Type","application/json");
+        xmlHttpReq.setRequestHeader("Cache-Control","no-cache");
+        xmlHttpReq.setRequestHeader("Pragma","no-cache");
+        xmlHttpReq.setRequestHeader("x-ibm-client-id","1faced10-3411-4f95-b4ee-7db67e960d7d");
+        xmlHttpReq.send(jsonData);
+    }
+    
+    function setCommResult(status, reqData, recData) {
+        document.getElementById("commStatus").textContent = status;
+        document.getElementById("requestData").textContent = reqData;
+        document.getElementById("receiveData").textContent = recData;
+    }
+    
+</script>    
+    
+<title>パラメータ入力画面</title>
+<style type="text/css">
+body {
+    font-family :"ヒラギノ角ゴ pro W3", "Hiragino Kaku Gothic Pro", "メイリオ", Meiryo, Osaka, "ＭＳ Ｐゴシック", "MS PGothic", sans-serif;
+    font-size: 13px;
+    margin: 0px;
+    padding: 0px;
+    color: #030133;
+    background-color: #ffffff
+
+}
+
+.rectangle {
+    margin: 25px 10px 15px 20px;
+    padding: 0px 30px 20px 20px;
+    background-color: #F3F3F3;
+    border-top:1px solid #DDDDDD;
+    border-left:1px solid #DDDDDD;
+    border-right:1px solid #DDDDDD;
+    border-bottom:1px solid #DDDDDD;
+}
+</style>
+</head>
+<body>
+
+<div class="rectangle" style="width:400px">
+    <h2 id="title1">パラメータ入力 1/3</h2>
+    <form id="inputDataForm" action="/inputData" method="POST">
+        <label id="label1" for="input1"></label>
+        <input id="input1" type="text" value="user" size="40"/><br><br>
+        
+        <label id="label2" for="input2"></label>
+        <input id="input2" type="text" value="user" size="40"/><br><br>
+        
+        <label id="label3" for="input3"></label>
+        <input id="input3" type="text" value="user" size="40"/><br><br>
+        
+        <input type="button" id="btnPrev" value="前頁" onclick="processPrev(formPage)">
+        <input type="button" id="btnNext" value="次頁" onclick="processNext(formPage)">
+        <input type="button" id="btnSubmit" value="Submit" onclick="processSubmit(formPage)">
+    </form>
+</div>
+
+<div class="rectangle" style="width:400px">
+    <h2 id="title2">通信結果</h2>
+    <label id="commStatusLabel" for="commStatus">送信データ</label><br>
+    <div id="commStatus">NONE</div><br>
+    <label id="requestLabel" for="requestData">送信データ</label><br>
+    <div id="requestData">NONE</div><br>
+    <label id="receiveLabel" for="receiveData">受信データ</label><br>
+    <div id="receiveData">NONE</div><br>
+</div>
+    
+</body>
+</html>

@@ -1,0 +1,5 @@
+{
+    "lineDataFolderName" : "/testKeep/",
+    "lineDataExpiresTime" : 60000, 
+    "lineDataReapInterval" :  10000 
+}

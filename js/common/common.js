@@ -1,0 +1,121 @@
+'use strict'
+
+const fs = require("fs");
+const request = require("request");
+
+const lineConfig = require("./lineSetting.json");
+
+exports = module.exports = common;
+
+exports.requestSync = requestSync;
+exports.getLineData = getLineData;
+exports.updateLineData = updateLineData;
+exports.deleteLineData = deleteLineData;
+exports.variable = new Map();
+
+function common(params){
+    
+    var propertyNames = Object.getOwnPropertyNames(params);
+    for (var i = 0 ; i < propertyNames.length ; i ++ ){
+        var key = propertyNames[i]
+        var value = params[propertyNames[i]];
+        exports.variable.set(key, value)
+    }
+    
+    var linePropertyNames = Object.getOwnPropertyNames(lineConfig);
+    for (var i = 0 ; i < linePropertyNames.length ; i ++ ){
+        var key = linePropertyNames[i]
+        var value = lineConfig[key];
+        exports.variable.set(key, value)
+    }
+    
+}
+
+/**
+/* Request処理(同期)
+/* 引数１：リクエストオブジェクト
+/* 例）{"url":"http://test.com", "method":"post", "headers": {"headers1":"headersValue1"}, "body":"data"}
+/* 戻り値：リクエスト処理結果
+**/
+function requestSync(reqOpt) {
+    return new Promise( function(resolve, reject) {
+        request(reqOpt, function(error, res, body) {
+            // エラーが発生した場合
+            // ex) ホスト存在しないケースなど
+            
+            console.log(reqOpt);
+            if ( error ){
+                reject("通信中にエラー発生");
+            }
+            
+            // 通信が成功し、ステータスコードは200の場合
+            if ( !error && res.statusCode == 200) {
+                resolve({"res":res,"body":body});
+                
+            // 通信が成功し、ステータスコードは200ではない場合
+            // ex) ホストは存在しているが、パス設定の誤りなど
+            } else {
+                resolve({"res":res,"body":body});
+            }
+        })
+    })
+}
+
+/**
+/* ラインの保存データ情報を取得する。
+/* ・ファイルがない場合、保存ファイルを生成する。
+/* ・以外の場合、保存期間をチェックして期間が過ぎた場合、データを初期化する。
+/* 引数１：ラインID
+/* 戻り値：保存データオブジェクト
+**/
+function getLineData(lineId){
+    var filePath = this.variable.get("__dirname") + this.variable.get("lineDataFolderName") + lineId;
+    var fileExist = fs.existsSync(filePath);
+    var objData = {};
+    // ラインのデータ保存ファイルが存在しない場合
+    if ( !fileExist ) {
+        // データをリセットする。。
+        objData.data = {};
+    // ラインのデータ保存ファイルが存在する場合
+    } else {
+        // ファイルから保存期間読み込む。
+        var data = fs.readFileSync(filePath);
+        objData = JSON.parse(data);
+        var expires = new Date(objData.expires);
+        // 保存期間が過ぎた場合
+        if( expires && expires <= Date.now()) {
+            // データをリセットする。
+            objData.data = {};
+        }
+    }
+    // 保存期間を生成する。
+    objData.expires = new Date(Date.now() + this.variable.get("lineDataExpiresTime"))
+    // ラインのデータ保存用ファイルを書き込む。
+    this.updateLineData(lineId, objData);
+    // 書き込んだデータを返却する。
+    return objData;
+}
+
+/**
+/* ラインの保存データを更新する。
+/* 引数１：ラインID
+/* 引数１：保存データオブジェクト
+/* 戻り値：なし
+**/
+function updateLineData(lineId, objData) {
+    var filePath = this.variable.get("__dirname") + this.variable.get("lineDataFolderName") + lineId;
+    fs.writeFileSync(filePath, JSON.stringify(objData));    
+}
+
+/**
+/* ラインの保存データを削除する。
+/* 引数１：ラインID
+/* 戻り値：なし
+**/
+function deleteLineData(lineId) {
+    var filePath = this.variable.get("__dirname") + this.variable.get("lineDataFolderName") + lineId;
+    var fileExist = fs.existsSync(filePath);
+    if( fileExist ){
+        fs.unlinkSync(filePath);
+    }
+}

@@ -1,0 +1,24 @@
+{
+  "API1_OPTION": {
+    "url" : "https://api.us-south.apiconnect.appdomain.cloud/appcorepocgmailcom-dev/sales/POCPermissionChkControllerVer/scene1D",
+    "method" : "POST",
+    "headers" : {
+        "x-ibm-client-id" : "1faced10-3411-4f95-b4ee-7db67e960d7d",
+        "content-type": "application/json"
+    },
+    "body" : ""
+  },
+  "PUSH_OPTION": {
+      "url" : "https://api.line.me/v2/bot/message/push",
+      "method" : "POST",
+      "headers" : {
+          "Content-Type" : "application/json",
+          "Authorization" : "Bearer owVtcj0fMataTHuvUKp3DA6kh0I0nueVaxf5rIJiEUTVBf/m/QGLP7BnEDxqEiTS6bw7dPNaEbhhXPPHvFbk5mRuRpZnDXO6BqLtFSs00uKwkAps3k40U2HAAF2f5va/i5ryWtwqgICvNd9rst04EAdB04t89/1O/w1cDnyilFU="
+      }, 
+      "body" : {
+          "to" : "",
+          "messages" : []
+      }
+  }
+  
+}
